@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+<head>
+	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+	<meta name="keywords" content="Django mobile framework library" />
+	<meta name="description" content="Django mobile framework library `django-mobilejp` test page" />
+	<title>django-mfw 動作チェックページ</title>
+</head>
+<body>
+	<h1>{{ device }}</h1>
+	<table style="font-size: xx-small">
+		<caption>機種情報</caption>
+		<tr>
+			<th>キャリア</th>
+			<td>{{ device.carrier }}</td>
+		</tr>
+		<tr>
+			<th>クッキー</th>
+			<td>{{ device.support_cookie }}</td>
+		</tr>
+		<tr>
+			<th>ユーザーID</th>
+			<td>{{ device.uid }}</td>
+		</tr>
+		<tr>
+			<th>セッションID</th>
+			<td>{{ request.session.session_key }}</td>
+		</tr>
+		<tr>
+			<th>フレバー</th>
+			<td>{{ flavour }}</td>
+		</tr>
+	</table>
+	<hr />
+	<form action="" method="post">{% csrf_token %}
+		{{ form.as_p }}
+		<p><input type="submit" value="Comment" /></p>
+	</form>
+	<hr />
+	{% for object in object_list %}
+	<p>{{ object.device }}</p>
+	<blockquote>
+		{{ object.comment }}
+	</blockquote>
+	{% endfor %}
+	<hr />
+	<h3>絵文字一覧</h3>
+	{% if device.carrier %}
+	<p style="font-size: xx-small">{% for symbol in emoji_symbols %}{{ symbol.unicode|escape }}   {% endfor %}</p>
+	{% else %}
+	<table style="font-size: xx-small;">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>D</th>
+				<th>K</th>
+				<th>S</th>
+				<th>U</th>
+			</tr>
+		</thead>
+		{% for symbol in emoji_symbols %}
+		<tr>
+			<td>{{ symbol.id }}</td>
+			<td>{{ symbol.docomo.thumbnail|safe }}</td>
+			<td>{{ symbol.kddi.thumbnail|safe }}</td>
+			<td>{{ symbol.softbank.thumbnail|safe }}</td>
+			<td>{{ symbol.unicode.unicode }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% endif %}
+</body>
+</html> 

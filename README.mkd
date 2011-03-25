@@ -1,0 +1,45 @@
+Introduction
+=================================================
+django-mfw is the frameworks for developing mobile site with Django.
+
+this framework handle
++	Unicode emoji and Japanese emoji (DoCoMo, KDDI, SoftBank) conversion
++	Device detection via HTTP META (mainly HTTP_USER_AGENT)
++	Device spoof detection via carrier CIDR
++	Response encoding via Device
++	Dynamic template changer via Device (like iPhone use `template/smartphone/iphone/index.html`
+	and other use `template/index.html`)
++	non cookie based session manager for device which doesn't support cookies via carrier UID.
+	this mechanism is using carrier UID and carrier CIDR. carrier CIDR is used for checking
+	the device spoofness for security reason. see below.
++	non cookie based csrf protection for device which doesn't support cookie. using non cookie based session for storage described above.
++	emoji tag for entering emoji on template
+
+Install
+=================================================
+
+	sudo pip install django-mfw
+	
+or
+
+	sudo pip install -e git://github.com/alisue/django-mfw.git#egg=django-mfw
+
+
+Required (Automatically installed)
+=================================================
++	uamd (User Agent Mobile Detector)
++	e4u (emoji4unicode bundle framework)
+
+
+How to use
+=================================================
+
+1.	Add `mfw` to your INSTALL_APPS settings in settings.py
+2.	Add `mfw.middleware.session.SessionMiddleware` and `mfw.middleware.csrf.CsrfViewMiddleware`
+	to your MIDDLEWARE_CLASSES setting and *comment out* `django.contrib.sessions.middleware.SessionMiddleware`
+	and `django.middleware.csrf.CsrfViewMiddleware`
+3.	Add `mfw.middleware.device.DeviceDetectionMiddleware`, `mfw.middleware.emoji.DeviceEmojiTranslationMiddleware` and
+	`mfw.middleware.flavour.DeviceFlavourDetectionMiddleware` to your MIDDLEWARE_CLASSES setting. To accelate request
+	response, make sure `mfw.middleware.device.DeviceDetectionMiddleware` is listed before other two middleware.
+4.	Add `mfw.template.loaders.flavour.Loade` as first item to your TEMPLATE_LOADERS setting.
+5.	Add `mfw.core.context_processors.device` and `mfw.core.context_processors.flavour` to your TEMPLATE_CONTEXT_PROCESSORS setting.
