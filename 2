@@ -1,14 +1,12 @@
-Introduction
-=================================================
-django-mfw is the frameworks for developing mobile site with Django.
+``django-mfw`` is the frameworks for developing mobile site with Django.
 
 this framework handle
 +	Unicode emoji and Japanese emoji (DoCoMo, KDDI, SoftBank) conversion
 +	Device detection via HTTP META (mainly HTTP_USER_AGENT)
 +	Device spoof detection via carrier CIDR
 +	Response encoding via Device
-+	Dynamic template changer via Device (like iPhone use `template/smartphone/iphone/index.html`
-	and other use `template/index.html`)
++	Dynamic template changer via Device (like iPhone use ``template/smartphone/iphone/index.html``
+	and other use ``template/index.html``)
 +	non cookie based session manager for device which doesn't support cookies via carrier UID.
 	this mechanism is using carrier UID and carrier CIDR. carrier CIDR is used for checking
 	the device spoofness for security reason. see below.
@@ -18,34 +16,35 @@ this framework handle
 
 Install
 =================================================
+::
 
 	sudo pip install django-mfw
 	
-or
+or::
 
-	sudo pip install -e git://github.com/alisue/django-mfw.git#egg=django-mfw
+	sudo pip install git+git://github.com/lambdalisue/django-mfw.git#egg=django-mfw
 
 
 Required (Automatically installed)
 =================================================
-+	uamd (User Agent Mobile Detector)
-+	e4u (emoji4unicode bundle framework)
++	`uamd <https://github.com/lambdalisue/uamd>`_ (User Agent Mobile Detector)
++	`e4u <https://github.com/lambdalisue/e4u>`_ (emoji4unicode bundle framework)
 
 
 How to use
 =================================================
 
-1.	Add `mfw` to your INSTALL_APPS settings in settings.py
-2.	Add `mfw.middleware.session.SessionMiddleware` and `mfw.middleware.csrf.CsrfViewMiddleware`
-	to your MIDDLEWARE_CLASSES setting and *comment out* `django.contrib.sessions.middleware.SessionMiddleware`
-	and `django.middleware.csrf.CsrfViewMiddleware`
-3.	Add `mfw.middleware.device.DeviceDetectionMiddleware`, `mfw.middleware.emoji.DeviceEmojiTranslationMiddleware` and
-	`mfw.middleware.flavour.DeviceFlavourDetectionMiddleware` to your MIDDLEWARE_CLASSES setting. To accelate request
-	response, make sure `mfw.middleware.device.DeviceDetectionMiddleware` is listed before other two middleware.
-4.	Add `mfw.template.loaders.flavour.Loade` as **first item** to your TEMPLATE_LOADERS setting.
-5.	Add `mfw.core.context_processors.device` and `mfw.core.context_processors.flavour` to your TEMPLATE_CONTEXT_PROCESSORS setting.
+1.	Add ``mfw`` to your ``INSTALL_APPS`` settings in ``settings.py``
+2.	Add ``mfw.middleware.session.SessionMiddleware`` and ``mfw.middleware.csrf.CsrfViewMiddleware``
+	to your ``MIDDLEWARE_CLASSES`` setting and *comment out* ``django.contrib.sessions.middleware.SessionMiddleware``
+	and ``django.middleware.csrf.CsrfViewMiddleware``
+3.	Add ``mfw.middleware.device.DeviceDetectionMiddleware``, ``mfw.middleware.emoji.DeviceEmojiTranslationMiddleware`` and
+	``mfw.middleware.flavour.DeviceFlavourDetectionMiddleware`` to your ``MIDDLEWARE_CLASSES`` setting. To accelate request
+	response, make sure ``mfw.middleware.device.DeviceDetectionMiddleware`` is listed before other two middleware.
+4.	Add ``mfw.template.loaders.flavour.Loade`` as **first item** to your ``TEMPLATE_LOADERS`` setting.
+5.	Add ``mfw.core.context_processors.device`` and ``mfw.core.context_processors.flavour`` to your ``TEMPLATE_CONTEXT_PROCESSORS`` setting.
 
-The code below describe sample settings. See [settings.py](https://github.com/alisue/django-mfw/blob/master/mfw-test/src/mfw_test/settings.py) for more detail.
+The code below describe sample settings. See `settings.py <https://github.com/alisue/django-mfw/blob/master/mfw-test/src/mfw_test/settings.py>`_ for more detail.::
 
 	# List of callables that know how to import templates from various sources.
 	TEMPLATE_LOADERS = (
@@ -82,17 +81,19 @@ Usage
 
 Device detection
 ----------------------------------------------------
-request device is detected with `mfw.middleware.device.DeviceDetectionMiddleware` and stored in `request.device` as uamd's device.
+request device is detected with ``mfw.middleware.device.DeviceDetectionMiddleware`` and stored in ``request.device`` as uamd's device.
 the uamd's device instance has information for the device like below.
 
-+	`device.support_cookie` is the device support cookie or not.
-+	`device.carrier` the carrier name of the device.
-+	`device.version` the version of the device
-+	`device.model` the model name of the device
-+	`device.encoding` the recommended encoding for the device
++	``device.support_cookie`` is the device support cookie or not.
++	``device.carrier`` the carrier name of the device.
++	``device.version`` the version of the device
++	``device.model`` the model name of the device
++	``device.encoding`` the recommended encoding for the device
 
-### Important note
-Insted of raise AttributeError, uamd's device instance will return `None` for convinience. That's why the code below woun't work as expect.
+Important note
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Insted of raise ``AttributeError``, uamd's device instance will return ``None`` for convinience.
+That's why the code below woun't work as expect.::
 
 	if hasattr(device, 'carrier'):
 		# code using device.carrier
