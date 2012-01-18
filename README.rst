@@ -1,6 +1,7 @@
 ``django-mfw`` is the frameworks for developing mobile site with Django.
 
 this framework handle
+
 +	Unicode emoji and Japanese emoji (DoCoMo, KDDI, SoftBank) conversion
 +	Device detection via HTTP META (mainly HTTP_USER_AGENT)
 +	Device spoof detection via carrier CIDR
@@ -27,6 +28,7 @@ or::
 
 Required (Automatically installed)
 =================================================
+
 +	`uamd <https://github.com/lambdalisue/uamd>`_ (User Agent Mobile Detector)
 +	`e4u <https://github.com/lambdalisue/e4u>`_ (emoji4unicode bundle framework)
 
@@ -35,13 +37,17 @@ How to use
 =================================================
 
 1.	Add ``mfw`` to your ``INSTALL_APPS`` settings in ``settings.py``
+
 2.	Add ``mfw.middleware.session.SessionMiddleware`` and ``mfw.middleware.csrf.CsrfViewMiddleware``
 	to your ``MIDDLEWARE_CLASSES`` setting and *comment out* ``django.contrib.sessions.middleware.SessionMiddleware``
 	and ``django.middleware.csrf.CsrfViewMiddleware``
+
 3.	Add ``mfw.middleware.device.DeviceDetectionMiddleware``, ``mfw.middleware.emoji.DeviceEmojiTranslationMiddleware`` and
 	``mfw.middleware.flavour.DeviceFlavourDetectionMiddleware`` to your ``MIDDLEWARE_CLASSES`` setting. To accelate request
 	response, make sure ``mfw.middleware.device.DeviceDetectionMiddleware`` is listed before other two middleware.
+
 4.	Add ``mfw.template.loaders.flavour.Loade`` as **first item** to your ``TEMPLATE_LOADERS`` setting.
+
 5.	Add ``mfw.core.context_processors.device`` and ``mfw.core.context_processors.flavour`` to your ``TEMPLATE_CONTEXT_PROCESSORS`` setting.
 
 The code below describe sample settings. See `settings.py <https://github.com/lambdalisue/django-mfw/blob/master/mfw-test/src/mfw_test/settings.py>`_ for more detail.::
@@ -85,9 +91,13 @@ request device is detected with ``mfw.middleware.device.DeviceDetectionMiddlewar
 the uamd's device instance has information for the device like below.
 
 +	``device.support_cookie`` is the device support cookie or not.
+
 +	``device.carrier`` the carrier name of the device.
+
 +	``device.version`` the version of the device
+
 +	``device.model`` the model name of the device
+
 +	``device.encoding`` the recommended encoding for the device
 
 .. WARNING::
@@ -147,8 +157,11 @@ the flavour is used for prefix of template_name. so if the flavour is ``smartpho
 then ``mfw.template.loaders.flavour.Loader`` will try to load the file listed below with template loaders listed in ``TEMPLATE_LOADERS`` except oneself.
 
 1.	``TEMPLATE_DIRECTORY/smartphone/iphone/1.3/blogs/post_detail.html``
+
 2.	``TEMPLATE_DIRECTORY/smartphone/iphone/blogs/post_detail.html``
+
 3.	``TEMPLATE_DIRECTORY/smartphone/blogs/post_detail.html``
+
 4.	``TEMPLATE_DIRECTORY/blogs/post_detail.html``
 
 ``mfw.template.loaders.flavour.Loader`` is bundle loader and loading method is depended with template loaders listed in ``TEMPLATE_LOADERS``
