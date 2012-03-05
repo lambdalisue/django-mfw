@@ -11,3 +11,11 @@ class DeviceDetectionMiddleware(object):
     def process_request(self, request):
         device = detect(request.META)
         request.device = device
+        request.device = lambda : None
+        request.device.encoding = 'utf-8'
+        request.device.carrier = 'softbank'
+        request.device.support_cookie = False
+        request.device.model = ""
+        request.device.version = None
+        request.device.spoof = False
+        request.device.uid = 10
