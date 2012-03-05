@@ -1,37 +1,44 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# author:        alisue
-# date:            2011/03/22
-#
+# vim: set fileencoding=utf-8 :
 from setuptools import setup, find_packages
 
-version = "0.1rc2"
+version = "0.2.0"
 
 def read(filename):
     import os.path
     return open(os.path.join(os.path.dirname(__file__), filename)).read()
 
 setup(
-        name="django-mfw",
-        version=version,
-        description = "Django's Mobile Framework",
-        long_description=read('README.rst'),
-        classifiers = [
-            'Intended Audience :: Developers',
-            'License :: OSI Approved :: BSD License',
-            'Programming Language :: Python',
-            'Topic :: Internet :: WWW/HTTP',
-        ],
-        keywords = "django mobile emoji device detection dynamic template",
-        author = "Alisue",
-        author_email = "lambdalisue@hashnote.net",
-        url=r"https://github.com/lambdalisue/django-mfw",
-        download_url = r"https://github.com/lambdalisue/django-mfw/tarball/master",
-        license = 'BSD',
-        packages = find_packages(),
-        #include_package_data = True,
-        zip_safe = True,
-        install_requires=['setuptools', 'e4u', 'uamd'],
+    name="django-mfw",
+    version=version,
+    description = "Django framework to develop mobilephone/smartphone site",
+    long_description=read('README.rst'),
+    classifiers = [
+        'Development Status :: 4 - Beta',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python',
+        'Topic :: Internet :: WWW/HTTP',
+    ],
+    keywords = "django mobile smartphone emoji device detection dynamic template",
+    author = "Alisue",
+    author_email = "lambdalisue@hashnote.net",
+    url=r"https://github.com/lambdalisue/django-mfw",
+    download_url = r"https://github.com/lambdalisue/django-mfw/tarball/master",
+    license = 'MIT',
+    packages = find_packages(),
+    include_package_data = True,
+    zip_safe = True,
+    install_requires=[
+        'django>=1.3',
+        'distribute',
+        'setuptools-git',
+        'IPy',
+        'BeautifulSoup',
+    ],
+    test_suite='runtests.runtests',
+    tests_require=[
+        'PyYAML',
+    ],
 )
-

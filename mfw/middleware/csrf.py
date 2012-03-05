@@ -1,7 +1,8 @@
 # vim: set fileencoding=utf-8 :
 """
 CsrfViewMiddleware which use session insted of cookie
-when the device does not support cookie.
+when the device does not support cookie. To enable session based csrf protection,
+you must use CacheBasedSessionMiddleware as well.
 
 
 AUTHOR:
@@ -32,24 +33,25 @@ License:
 
 """
 from __future__ import with_statement
-from django.conf import settings
-from django.middleware.csrf import CsrfViewMiddleware as DjangoCsrfViewMiddleware
+from django.middleware.csrf import CsrfViewMiddleware
 
-def get_device(request):
-    from mfw.core import detect
-    return getattr(request, 'device', detect(request.META))
 
-class CsrfViewMiddleware(DjangoCsrfViewMiddleware):
+class SessionBasedCsrfViewMiddleware(CsrfViewMiddleware):
+    """
+    CsrfViewMiddleware which use session insted of cookie
+    when the device does not support cookie.
+
+    """
     def process_view(self, request, *args, **kwargs):
-        device = get_device(request)
-        if not device.support_cookie:
+        if not request.device.support_cookie:
+            # the device does not support cookie so use session insted
             request.COOKIES = request.session
-        response = super(CsrfViewMiddleware, self).process_view(request, *args, **kwargs)
-        return response
+        return super(SessionBasedCsrfViewMiddleware, self).process_view(request, *args, **kwargs)
 
     def process_response(self, request, response):
-        device = get_device(request)
-        if not device.support_cookie:
+        if not request.device.support_cookie:
+            # the device does not support cookie so override set_cookie method
+            # to use session insted of cookie
             response.csrf_processing_done = False
             def set_cookie(key, value, max_age=None, 
                     expires=None, path='/', domain=None,
@@ -57,5 +59,5 @@ class CsrfViewMiddleware(DjangoCsrfViewMiddleware):
                 request.session[key] = value
                 request.session.save()
             response.set_cookie = set_cookie
-        return super(CsrfViewMiddleware, self).process_response(request, response)
+        return super(SessionBasedCsrfViewMiddleware, self).process_response(request, response)
 

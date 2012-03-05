@@ -1,26 +1,57 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# Author:    alisue
-# Date:        2011/03/25
-#
-from django.template import TemplateDoesNotExist
-from django.template.loader import find_template_loader, BaseLoader
+# vim: set fileencoding=utf-8 :
+"""
+Flavour template loader
 
-from ...conf import settings
-from ...middleware.flavour import get_flavour
+
+AUTHOR:
+    lambdalisue[Ali su ae] (lambdalisue@hashnote.net)
+    
+License:
+    The MIT License (MIT)
+
+    Copyright (c) 2012 Alisue allright reserved.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to
+    deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+    sell copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+    IN THE SOFTWARE.
+
+"""
+from __future__ import with_statement
+from django.conf import settings
+from django.template import TemplateDoesNotExist
+from django.template.loader import BaseLoader
+from django.template.loader import find_template_loader
+
+from mfw.middleware.flavour import get_flavour
 
 class Loader(BaseLoader):
+    """Flavour template loader"""
     is_usable = True
 
     def __init__(self, *args, **kwargs):
         loaders = []
-        for loader_name in settings.MFW_FLAVOURS_TEMPLATE_LOADERS:
+        for loader_name in settings.TEMPLATE_LOADERS:
+            if loader_name == 'mfw.template.loaders.flavour.Loader':
+                continue
             loader = find_template_loader(loader_name)
             if loader is not None:
                 loaders.append(loader)
         self.template_source_loaders = tuple(loaders)
-        super(BaseLoader, self).__init__(*args, **kwargs)
+        super(Loader, self).__init__(*args, **kwargs)
 
     def sliceup_flavour_name(self, flavour):
         offset = flavour.rfind(u'/')
@@ -28,10 +59,9 @@ class Loader(BaseLoader):
             return flavour[:offset]
         else:
             return None
+
     def prepare_template_name(self, template_name, flavour):
         template_name = u'%s/%s' % (flavour, template_name)
-        if settings.MFW_FLAVOURS_TEMPLATE_PREFIX:
-            template_name = settings.MFW_FLAVOURS_TEMPLATE_PREFIX + template_name
         return template_name
 
     def load_template(self, template_name, template_dirs=None):
