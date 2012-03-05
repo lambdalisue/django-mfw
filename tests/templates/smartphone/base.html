@@ -4,6 +4,10 @@
 <html>
 <head>
     <meta charset="utf-8">
+
+    <!-- Add viewport because this template is for Smartphone -->
+    <meta name="viewport" content="width=device-width" />
+
     <title>{% block title %}Mini blog{% endblock %}</title>
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -33,6 +37,7 @@
         </header>
         <section id="contents">
             <p style="text-align: center">Your flavour is <code>{{ flavour }}</code></p>
+            <p style="text-align: center">You see thie message because you are using <strong>Smartphone</strong></p>
             <p style="text-align: center">{% emoji '000' %} {% emoji '001' %} {% emoji '002' %}</p>
             {% block contents %}
             {% endblock %}

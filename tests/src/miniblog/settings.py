@@ -119,14 +119,14 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    # This DeviceDetectionMiddleware must come first
+    'mfw.middleware.device.DeviceDetectionMiddleware',
+
     # CacheBasedSessionMiddleware requires the following middlewares to enable
     # django's cache system.
     'django.middleware.cache.UpdateCacheMiddleware',            
     'django.middleware.common.CommonMiddleware',                
     'django.middleware.cache.FetchFromCacheMiddleware',         
-
-    # This DeviceDetectionMiddleware must come first
-    'mfw.middleware.device.DeviceDetectionMiddleware',
 
     # This CacheBasedSessionMiddleware is required to enable session with the
     # device which does not support cookie. Comment out existing
@@ -145,7 +145,8 @@ MIDDLEWARE_CLASSES = (
     'mfw.middleware.flavour.DeviceFlavourDetectionMiddleware',
                                                                 
     # This DeviceEncodingMiddleware is required to convert response encoding
-    'mfw.middleware.encoding.DeviceEncodingMiddleware',
+    #'mfw.middleware.encoding.DeviceEncodingMiddleware',
+    'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware',
                                                                                                                             
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -172,9 +173,11 @@ INSTALLED_APPS = (
     'miniblog.autocmds',
     'miniblog.blogs',
     'mfw',
+    'mfw.contrib.emoji',
 )
 
-REGISTRATION_SUPPLEMENT_CLASS = False
+# Ingoring non relible mobile is not useful for debugging
+MFW_DEVICE_IGNORE_NON_RELIBLE_MOBILE = not DEBUG
 
 FIXTURE_DIRS = (
     os.path.join(ROOT, 'fixtures'),

@@ -10,7 +10,7 @@ def read(filename):
 setup(
     name="django-mfw",
     version=version,
-    description = "Django framework to develop mobilephone/smartphone site",
+    description = "Django framework for mobilephone/smartphone site",
     long_description=read('README.rst'),
     classifiers = [
         'Development Status :: 4 - Beta',
@@ -36,6 +36,7 @@ setup(
         'setuptools-git',
         'IPy',
         'BeautifulSoup',
+        'e4u',
     ],
     test_suite='runtests.runtests',
     tests_require=[
