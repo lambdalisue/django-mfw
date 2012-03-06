@@ -101,6 +101,7 @@ section#main-contents{
 }
 
 section#comment-section{
+    clear: both;
     float: none;
     width: 100%;
 }
