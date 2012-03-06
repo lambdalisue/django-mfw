@@ -43,26 +43,23 @@ Quick tutorial
 
 1.	Add ``mfw`` and ``mfw.contrib.emoji`` to your ``INSTALL_APPS`` settings in ``settings.py``
 
-2.  Add required middlewares to enable django cache system. See
-    https://docs.djangoproject.com/en/dev/topics/cache/#the-per-site-cache
-
-3.  Add ``mfw.middleware.device.DeviceDetectionMiddleware`` to **the first
+2.  Add ``mfw.middleware.device.DeviceDetectionMiddleware`` to **the first
     item** of ``MIDDLEWARE_CLASSES`` in ``settings.py``
 
     .. Note::
         The following django-mfw middlewares are assumed that this middleware
         has called before they are called.
 
-4.	Add ``mfw.middleware.session.CacheBasedSessionMiddleware`` and ``mfw.middleware.csrf.SessionBasedCsrfViewMiddleware``
-	to your ``MIDDLEWARE_CLASSES`` setting and *comment out* ``django.contrib.sessions.middleware.SessionMiddleware``
-	and ``django.middleware.csrf.CsrfViewMiddleware``
+3.	Add ``mfw.middleware.session.SessionMiddleware``
+	to your ``MIDDLEWARE_CLASSES`` setting and *comment out* 
+	``django.contrib.sessions.middleware.SessionMiddleware``
 
-5.	Add ``mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware`` and
+4.	Add ``mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware`` and
 	``mfw.middleware.flavour.DeviceFlavourDetectionMiddleware`` to your ``MIDDLEWARE_CLASSES`` setting.
 
-6.	Add ``mfw.template.loaders.flavour.Loader`` to **the first item** of ``TEMPLATE_LOADERS`` setting.
+5.	Add ``mfw.template.loaders.flavour.Loader`` to **the first item** of ``TEMPLATE_LOADERS`` setting.
 
-7.	Add ``mfw.context_processors.device`` and ``mfw.context_processors.flavour`` to your ``TEMPLATE_CONTEXT_PROCESSORS`` setting.
+6.	Add ``mfw.context_processors.device`` and ``mfw.context_processors.flavour`` to your ``TEMPLATE_CONTEXT_PROCESSORS`` setting.
 
 The code below describe sample settings. See `settings.py <https://github.com/lambdalisue/django-mfw/blob/master/tests/src/miniblog/settings.py>`_ for more detail.::
 
@@ -77,15 +74,10 @@ The code below describe sample settings. See `settings.py <https://github.com/la
 	MIDDLEWARE_CLASSES = (
 	    'mfw.middleware.device.DeviceDetectionMiddleware',
 
-        'django.middleware.cache.UpdateCacheMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.cache.FetchFromCacheMiddleware',
-
 	    'django.middleware.common.CommonMiddleware',
 	    #'django.contrib.sessions.middleware.SessionMiddleware',
-	    #'django.middleware.csrf.CsrfViewMiddleware',
-	    'mfw.middleware.session.CacheBasedSessionMiddleware',
-	    'mfw.middleware.csrf.SessionBasedCsrfViewMiddleware',
+	    'mfw.middleware.session.SessionMiddleware',
+	    'django.middleware.csrf.CsrfViewMiddleware',
 	    'django.contrib.auth.middleware.AuthenticationMiddleware',
 	    'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware',
 	    'mfw.middleware.flavour.DeviceFlavourDetectionMiddleware',
@@ -125,12 +117,11 @@ the ``device`` instance has following attributes
 ``device.version``
     A version name of this device. It is used for flavour template system.
 
+``device.encoding``
+    A recommended encoding for the device. It is used to encode the request/response
 
 ``device.carrier (additional)``
     An attribute which Mobilephone device has. the carrier name of the device.
-
-``device.encoding (additional)``
-    An attribute which Mobilephone device has. the recommended encoding for the device
 
 ``device.uid (additional)``
     An attribute which Mobilephone device has. User id which is passed from
@@ -146,7 +137,7 @@ the ``device`` instance has following attributes
 Non cookie based Session and CSRF protection
 ----------------------------------------------------
 Django default session is saved on cookie because of security reason. However some device doesn't support cookie
-so ``mfw.middleware.session.CacheBasedSessionMiddleware`` use carrier's UID and django cache system for saving session.
+so ``mfw.middleware.session.SessionMiddleware`` use carrier's UID and django cache system for saving session.
 
 the middleware never try to use carrier's UID for device which support cookie. it is only for the device which doesn't support cookie
 and commonly such device has carrier's UID. Because of security, device accessed from out of carrier's CIDR

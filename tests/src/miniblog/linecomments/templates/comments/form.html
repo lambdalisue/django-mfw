@@ -1,0 +1,26 @@
+{% load comments i18n %}
+<form action="{% comment_form_target %}" method="post">{% csrf_token %}
+<p>
+  {% if next %}<span><input type="hidden" name="next" value="{{ next }}" /></span>{% endif %}
+  {% for field in form %}
+    {% if field.is_hidden %}
+        {% ifequal field.name "name" %}
+        <span><input type="hidden" id="id_name" name="name" value="{{ device.name }}({{ device.model }})" /></span>
+        {% else %}
+        <span>{{ field }}</span>
+        {% endifequal %}
+    {% else %}
+      {% if field.errors %}{{ field.errors }}{% endif %}
+      <span
+        {% if field.errors %} class="error"{% endif %}
+        {% ifequal field.name "honeypot" %} style="display:none;"{% endifequal %}>
+        {{ field }}
+      </span>
+    {% endif %}
+  {% endfor %}
+  <span class="submit">
+    <input type="submit" name="post" class="submit-post" value="{% trans "Post" %}" />
+  </span>
+</p>
+</form>
+

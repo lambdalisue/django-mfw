@@ -1,10 +1,6 @@
 # vim: set fileencoding=utf-8 :
 """
-Middleware for detecting device
-
-
-.. Note::
-    This middleware must be called earlier than other MFW middlewares.
+Unittest module of ...
 
 
 AUTHOR:
@@ -35,12 +31,36 @@ License:
 
 """
 from __future__ import with_statement
-from mfw.device import detect
+from django.test import TestCase
+from mfw.tests.mock import Mock
+from mfw.tests.override_settings import override_settings
+from mfw.tests import user_agents
+from mfw.middleware.device import DeviceDetectionMiddleware
+from mfw.device.base import Device
 
+@override_settings(MIDDLEWARE_CLASSES=(
+    'mfw.middleware.device.DeviceDetectionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+), TEMPLATE_CONTEXT_PROCESSORS=())
+class MFWDeviceDetectionMiddlewareTestCase(TestCase):
 
-class DeviceDetectionMiddleware(object):
-    """detect device and add ``device`` argument to ``request`` instance"""
-    def process_request(self, request):
-        device = detect(request.META)
-        request.device = device
-        return None
+    def test_standalone(self):
+        request_class = Mock('django.http.HttpRequest')
+        request = request_class()
+
+        for user_agent in user_agents.INTERNET_EXPLORER:
+            kind, name, model, version, user_agent = user_agent
+
+            request.META = {
+                    'HTTP_USER_AGENT': user_agent
+                }
+
+            middleware = DeviceDetectionMiddleware()
+            middleware.process_request(request)
+
+            self.assertTrue(isinstance(request.device, Device))
+            self.assertEqual(request.device.kind, kind)
+            self.assertEqual(request.device.name, name)
+            self.assertEqual(request.device.model, model)
+            self.assertTrue(request.device.version.startswith(version))
+

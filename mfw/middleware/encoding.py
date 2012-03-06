@@ -33,14 +33,30 @@ License:
 
 """
 from __future__ import with_statement
+from django.conf import settings
+from django.utils.encoding import force_unicode
+
+
+def encode(src, encoding):
+    c = force_unicode(src)
+    # insted of raise exception, replace character which cannot encode.
+    dst = c.encode(encoding, 'replace')
+    return dst
 
 class DeviceEncodingMiddleware(object):
     """Middleware for convert response encoding to encoding which detected device use."""
+    def process_request(self, request):
+        # tell django to use device encoding
+        request.encoding = request.device.encoding
+
     def process_response(self, request, response):
-        if response['content-type'].startswith('text/'):
+        if request.device.encoding == settings.DEFAULT_CHARSET:
+            return response
+
+        if response['content-type'].startswith('text/') and not getattr(response, '_mfw_encoded', False):
             # encode only for text
-            if hasattr(request.device, 'encoding'):
-                c = unicode(response.content, 'utf-8')
-                response.content = c.encode(request.device.encoding, 'replace')
-                response['content-type'] = 'application/xhtml+xml; charset=%s' % request.device.encoding
+            response.content = encode(response.content, request.device.encoding)
+            response['content-type'] = 'application/xhtml+xml; charset=%s' % request.device.encoding
+            response._mfw_encoded = True
+
         return response

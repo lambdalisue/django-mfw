@@ -50,13 +50,11 @@ def appraisal(device, meta):
 
 
 class Mobilephone(Device):
-    @property
-    def carrier(self):
-        return self._name
+    _kind = 'mobilephone'
 
     @property
-    def encoding(self):
-        return self._encoding
+    def carrier(self):
+        return self._name.lower()
 
     @property
     def uid(self):
@@ -64,7 +62,7 @@ class Mobilephone(Device):
 
 
 class DoCoMo(Mobilephone):
-    _name = 'docomo'
+    _name = 'DoCoMo'
 
     @classmethod
     def detect(cls, meta):
@@ -95,7 +93,7 @@ class DoCoMo(Mobilephone):
 
 
 class KDDI(Mobilephone):
-    _name = 'kddi'
+    _name = 'KDDI'
 
     @classmethod
     def detect(cls, meta):
@@ -120,7 +118,7 @@ class KDDI(Mobilephone):
 
 
 class Softbank(Mobilephone):
-    _name = 'softbank'
+    _name = 'Softbank'
 
     @classmethod
     def detect(cls, meta):
@@ -138,7 +136,7 @@ class Softbank(Mobilephone):
 
         # is this device support cookie?
         generation = kwargs.pop('generation')
-        version = kwargs['version']
+        version = kwargs.pop('version')
         if generation == 'J-PHONE':
             kwargs['support_cookie'] = version.startswith('5')
         else:

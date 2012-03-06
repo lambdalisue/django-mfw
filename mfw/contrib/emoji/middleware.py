@@ -47,7 +47,6 @@ class DeviceEmojiTranslationMiddleware(object):
             for k, v in d.iteritems():
                 d[k] = e4u.translate(v, **profile)
                 
-        request.encoding = request.device.encoding
         profile = {'carrier': request.device.carrier, 'encoding': request.device.encoding}
         
         request.GET._mutable = True

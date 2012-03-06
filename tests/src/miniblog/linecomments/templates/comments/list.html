@@ -1,0 +1,13 @@
+<section id="comments">
+    {% for comment in comment_list|slice:"-10:" reversed %}
+    <p class="comment">{{ comment.comment }}
+        <span class="additional">
+        <span class="name">{{ comment.name }}</span>
+        <time datetime="{{ comment.submit_date|date }}">
+            {{ comment.submit_date|date:"h:m:s" }}
+        </time>
+        </span>
+    </p>
+    {% endfor %}
+</section>
+

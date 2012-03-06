@@ -9,7 +9,7 @@ a {
 
 div#container {
   position: relative;
-  width: 980px;
+  width: 100%;
   margin: 20px auto; }
 
 header {
@@ -29,9 +29,9 @@ header {
     text-align: center;
     color: #6d6d6d; }
   header nav {
-    position: absolute;
-    top: 0;
-    right: 0; }
+    position: static;
+    margin-bottom: -30px;
+  }
 
 section#contents {
   border-top: 1px solid #dedede;
@@ -49,7 +49,7 @@ section#contents {
   section#contents article.entry {
     position: relative;
     float: left;
-    width: 460px;
+    width: 80%;
     height: 200px;
     padding: 10px;
     overflow: hidden; }
@@ -95,17 +95,17 @@ section#notification{
     text-align: center;
 }
 section#main-contents{
-    width: 680px;
-    float: left;
-    border-right: 1px solid #dedede;
+    width: 100%;
+    float: none;
+    border: none;
 }
 
 section#comment-section{
-    float: right;
-    width: 289px;
+    float: none;
+    width: 100%;
 }
 section#comment-section input#id_comment {
-    width: 230px;
+    width: 80%;
 }
 section#comments p.comment{
     position: relative;

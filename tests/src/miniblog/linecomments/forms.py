@@ -1,10 +1,6 @@
 # vim: set fileencoding=utf-8 :
 """
-Middleware for detecting device
-
-
-.. Note::
-    This middleware must be called earlier than other MFW middlewares.
+Form of
 
 
 AUTHOR:
@@ -35,12 +31,17 @@ License:
 
 """
 from __future__ import with_statement
-from mfw.device import detect
+from django import forms
+from django.contrib.comments.forms import CommentForm
 
+class LineCommentForm(CommentForm):
 
-class DeviceDetectionMiddleware(object):
-    """detect device and add ``device`` argument to ``request`` instance"""
-    def process_request(self, request):
-        device = detect(request.META)
-        request.device = device
-        return None
+    def __init__(self, *args, **kwargs):
+        super(LineCommentForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget = forms.HiddenInput()
+        self.fields['email'].initial = 'unknown@unknown.com'
+        self.fields['email'].widget = forms.HiddenInput()
+        self.fields['url'].initial = ''
+        self.fields['url'].widget = forms.HiddenInput()
+        self.fields['comment'].widget = forms.TextInput()
+

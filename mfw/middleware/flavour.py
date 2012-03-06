@@ -31,6 +31,7 @@ License:
 
 """
 from __future__ import with_statement
+import os
 from django.conf import settings
 try:
     from threading import local
@@ -45,33 +46,29 @@ def get_flavour():
 
 def parse_device(device):
     """parse device and return device flavour"""
-    cookie = 'support_cookie' if device.support_cookie else 'unsupport_cookie'
-    kind = device.kind or ''
-    name = device.name or ''
-    model = device.model or ''
-    version = device.version or ''
 
-    kwargs = {
-            'cookie': cookie.lower(),
-            'kind': kind.lower(),
-            'name': name.lower(),
-            'model': model.lower(),
-            'version': version.lower(),
-        }                                     
-    key = hash(frozenset(kwargs.items()))
-    if key in parse_device._cache:
-        return parse_device._cache[key]
+    # try to load flavour from cache because generating
+    # flavour may slow.
+    if device in parse_device._cache:
+        return parse_device._cache[device]
     
-    flavour = settings.MFW_FLAVOUR_PATTERN % kwargs
-    flavour = flavour.replace('////', '/')
-    flavour = flavour.replace('///', '/')
-    flavour = flavour.replace('//', '/')
-    if flavour.startswith('/'):
-        flavour = flavour[1:]
-    if flavour.endswith('/'):
-        flavour = flavour[:-1]
+    columns = list(settings.MFW_DEVICE_FLAVOUR_COLUMNS(device))
+    for overlap_rule in settings.MFW_DEVICE_FLAVOUR_OVERLAP_RULES:
+        condition, overlap = overlap_rule
+        if condition(device, columns):
+            columns = overlap(device, columns)
+            if isinstance(columns, tuple):
+                columns = list(columns)
 
-    parse_device._cache[key] = flavour
+    # remove all empty columns
+    columns = filter(bool, columns)
+
+    if columns:
+        flavour = os.path.join(*columns)
+    else:
+        flavour = ''
+
+    parse_device._cache[device] = flavour
     return flavour
 parse_device._cache = {}
 

@@ -48,7 +48,7 @@ class EmojiNode(template.Node):
 
 @register.tag
 def emoji(parser, token):
-    u"""Insert emoji via emoji id
+    """Insert emoji via emoji id
     
     Usage:
         {% emoji 'emoji_id' %}

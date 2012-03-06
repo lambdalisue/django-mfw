@@ -8,4 +8,5 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^registration/', include('registration.urls')),
     url(r'^', include('miniblog.blogs.urls')),
+    url(r'^comments/', include('django.contrib.comments.urls')),
 )

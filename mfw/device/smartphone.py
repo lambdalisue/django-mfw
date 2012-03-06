@@ -38,9 +38,9 @@ class Smartphone(UserAgentRegexPatternDevice):
     _support_cookie = True
     _kind = 'smartphone'
     _patterns = (
-        ('iPhone', re.compile(r"Mozilla/[\d\.]* \(iPhone; .*CPU (?:(?:iPhone OS (?P<version>[\w_]*))|)")),
-        ('iPod', re.compile(r"Mozilla/[\d\.]* \(iPod; .*CPU (?:(?:iPhone OS (?P<version>[\w_]*))|)")),
-        ('iPad', re.compile(r"Mozilla/[\d\.]* \(iPad; .*CPU (?:(?:OS (?P<version>[\w_]*))|)")),
+        ('iOS', re.compile(r"Mozilla/[\d\.]* \((?P<model>[^;]*); .*CPU like Mac OS X")),
+        ('iOS', re.compile(r"Mozilla/[\d\.]* \((?P<model>[^;]*); .*CPU iPhone OS (?P<version>[\w_]*) like Mac OS X")),
+        ('iOS', re.compile(r"Mozilla/[\d\.]* \((?P<model>[^;]*); .*CPU OS (?P<version>[\w_]*) like Mac OS X")),
         ('Android', re.compile(r"Mozilla/[\d\.]* \(Linux; U; Android (?P<version>[^;]*); [^;]*; (?P<model>[^;\)]*) Build/.*\)")),
         ('Android', re.compile(r"Opera/[\d\.]* \(Android (?P<version>[^;]*); Linux; (?P<model>[^;\)\/]*)")),
         ('Android', re.compile(r"Mozilla/[\d\.]* \(Android; Linux .*\) Gecko/\d* (?P<model>[^/]*)/(?P<version>[\d\.]*)")),

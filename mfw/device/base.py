@@ -31,6 +31,8 @@ License:
 
 """
 from __future__ import with_statement
+import uuid
+from django.conf import settings
 
 class Device(object):
     _support_cookie = None
@@ -38,34 +40,51 @@ class Device(object):
     _name = None
     _model = None
     _version = None
+    _encoding = None
     is_dummy = False
 
-    def __init__(self, support_cookie=None, kind=None, name=None, model=None, version=None):
+    def __init__(self, support_cookie=None, kind=None, name=None, model=None, version=None, encoding=None):
         self._support_cookie = self._support_cookie or support_cookie
         self._kind = self._kind or kind
         self._name = self._name or name
         self._model = self._model or model
         self._version = self._version or version
+        self._encoding = self._encoding or encoding
 
     @property
     def support_cookie(self):
-        return self._support_cookie
+        return self._support_cookie or False
 
     @property
     def kind(self):
-        return self._kind
+        return self._kind or ''
 
     @property
     def name(self):
-        return self._name
+        return self._name or ''
 
     @property
     def model(self):
-        return self._model
+        return self._model or ''
 
     @property
     def version(self):
-        return self._version
+        return self._version or ''
+
+    @property
+    def encoding(self):
+        return self._encoding or settings.DEFAULT_CHARSET
+
+    def __hash__(self):
+        guid = uuid.uuid5(uuid.NAMESPACE_DNS, "%s-%s-%s-%s-%s-%s" % (
+                self.support_cookie,
+                self.kind,
+                self.name,
+                self.model,
+                self.version,
+                self.encoding,
+            ))
+        return hash(str(guid))
 
     @classmethod
     def detect(cls, meta):
