@@ -38,11 +38,11 @@ class Browser(UserAgentRegexPatternDevice):
     _support_cookie = True
     _kind = 'browser'
     _patterns = (
-        ('Lunascape', re.compile(r"Mozilla/[\d\.]* \(compatible; MSIE [\d\.]*; [^;]*; .*Lunascape (?P<version>[^\)]*)\)")),
-        ('Chrome', re.compile(r"Mozilla/[\d\.]* \(.*\) .* Chrome/(?P<version>[\d\.]*)")),
-        ('Firefox', re.compile(r"Mozilla/[\d\.]* \(.*\) .* Firefox/(?P<version>[\d\.]*)")),
-        ('Safari', re.compile(r"Mozilla/[\d\.]* \(.*\) .* Version/(?P<version>[\d\.]*) Safari")),
-        ('Opera', re.compile(r"Mozilla/[\d\.]* \(.*\) Opera (?P<version>[\d\.]*)")),
-        ('Opera', re.compile(r"Opera/(?P<version>[\d\.]*)")),
-        ('Explorer', re.compile(r"Mozilla/[\d\.]* \(compatible; MSIE (?P<version>[\d\.]*);")),
+        ('Lunascape', re.compile(r"Mozilla/[\d\.]* \(compatible; MSIE [\d\.]*; (?P<model>Windows|Mac|Linux) .*Lunascape (?P<version>[^\)]*)\)")),
+        ('Chrome', re.compile(r"Mozilla/[\d\.]* \(.*(?P<model>Windows|Mac|Linux).*\) .* Chrome/(?P<version>[\d\.]*)")),
+        ('Firefox', re.compile(r"Mozilla/[\d\.]* \(.*(?P<model>Windows|Mac|Linux).*\) .* Firefox/(?P<version>[\d\.]*)")),
+        ('Safari', re.compile(r"Mozilla/[\d\.]* \(.*(?P<model>Windows|Mac|Linux).*\) .* Version/(?P<version>[\d\.]*) Safari")),
+        ('Opera', re.compile(r"Mozilla/[\d\.]* \(compatible; MSIE [\d\.]*;.*(?P<model>Windows|Mac|Linux).*\) Opera (?P<version>[\d\.]*)")),
+        ('Opera', re.compile(r"Opera/(?P<version>[\d\.]*) \(.*(?P<model>Windows|Macintosh|Linux).*\)")),
+        ('Explorer', re.compile(r"Mozilla/[\d\.]* \(compatible; MSIE (?P<version>[\d\.]*); (?P<model>Windows|Mac|Linux*)")),
     )

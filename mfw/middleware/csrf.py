@@ -1,8 +1,7 @@
+#!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 """
-CsrfViewMiddleware which use session insted of cookie
-when the device does not support cookie. To enable session based csrf protection,
-you must use CacheBasedSessionMiddleware as well.
+short module explanation
 
 
 AUTHOR:
@@ -33,31 +32,31 @@ License:
 
 """
 from __future__ import with_statement
-from django.middleware.csrf import CsrfViewMiddleware
+from django.middleware.csrf import CsrfViewMiddleware as OriginalCsrfViewMiddleware
 
 
-class SessionBasedCsrfViewMiddleware(CsrfViewMiddleware):
+class CsrfViewMiddleware(OriginalCsrfViewMiddleware):
     """
-    CsrfViewMiddleware which use session insted of cookie
-    when the device does not support cookie.
+    CsrfViewMiddleware which use UID insted of cookie to store
+    csrf token when the device does not support cookie
 
     """
-    def process_view(self, request, *args, **kwargs):
-        if not request.device.support_cookie:
-            # the device does not support cookie so use session insted
-            request.COOKIES = request.session
-        return super(SessionBasedCsrfViewMiddleware, self).process_view(request, *args, **kwargs)
 
     def process_response(self, request, response):
-        if not request.device.support_cookie:
-            # the device does not support cookie so override set_cookie method
-            # to use session insted of cookie
-            response.csrf_processing_done = False
-            def set_cookie(key, value, max_age=None, 
-                    expires=None, path='/', domain=None,
-                    secure=False, httponly=False):
-                request.session[key] = value
-                request.session.save()
-            response.set_cookie = set_cookie
-        return super(SessionBasedCsrfViewMiddleware, self).process_response(request, response)
-
+        if getattr(request.COOKIES, '_mfw_overridden', False):
+            # cookie is not available thus override set_cookie method
+            # of response instance.
+            #
+            # Note:
+            #   middleware of django is called bottom up order for
+            #   response phase that's why this middleware is required
+            #   even mfw.middleware.session.SessionMiddleware does
+            #   exactlly same thing.
+            #
+            if not getattr(response.set_cookie, '_mfw_overridden', False):
+                def set_cookie(key, value, **kwargs):
+                    request.session[key] = value
+                    request.session.save()
+                response.set_cookie = set_cookie
+                response.set_cookie._mfw_overridden = True
+        return super(CsrfViewMiddleware, self).process_response(request, response)

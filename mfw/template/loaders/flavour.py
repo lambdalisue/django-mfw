@@ -31,13 +31,14 @@ License:
 
 """
 from __future__ import with_statement
+import os
 from django.conf import settings
 from django.template import TemplateDoesNotExist
 from django.template.loader import BaseLoader
 from django.template.loader import find_template_loader
 
 from mfw.middleware.flavour import get_flavour
-
+    
 class Loader(BaseLoader):
     """Flavour template loader"""
     is_usable = True
@@ -53,44 +54,52 @@ class Loader(BaseLoader):
         self.template_source_loaders = tuple(loaders)
         super(Loader, self).__init__(*args, **kwargs)
 
-    def sliceup_flavour_name(self, flavour):
-        offset = flavour.rfind(u'/')
-        if offset != -1:
-            return flavour[:offset]
-        else:
-            return None
-
     def prepare_template_name(self, template_name, flavour):
-        template_name = u'%s/%s' % (flavour, template_name)
-        return template_name
+        """prepare template_name with flavour and actual template name"""
+        return os.path.join(flavour, template_name)
+
+    def get_flavour(self):
+        return get_flavour()
 
     def load_template(self, template_name, template_dirs=None):
         tried = []
-        flavour = get_flavour()
-        while(flavour):
+        flavour = self.get_flavour()
+        while(True):
             _template_name = self.prepare_template_name(template_name, flavour)
             for loader in self.template_source_loaders:
                 try:
-                    return loader(_template_name, template_dirs)
+                    return loader.load_template(_template_name, template_dirs)
                 except TemplateDoesNotExist:
-                    pass
-            tried.append(_template_name)
-            # slice up flavour
-            flavour = self.sliceup_flavour_name(flavour)
-        raise TemplateDoesNotExist("Tried %s" % tried)
+                    tried.append(_template_name)
+            # slice up flavour (include flavor='')
+            if flavour:
+                flavour = os.path.dirname(flavour)
+            else:
+                break
+        if tried:
+            error_msg = "Tried %s" % tried
+        else:
+            error_msg = "Your TEMPLATE_DIRS settings is empty. Change it to point to at least one template directory."
+        raise TemplateDoesNotExist(error_msg)
 
     def load_template_source(self, template_name, template_dirs=None):
         tried = []
-        flavour = get_flavour()
-        while(flavour):
+        flavour = self.get_flavour()
+        while(True):
             _template_name = self.prepare_template_name(template_name, flavour)
             for loader in self.template_source_loaders:
-                if hasattr(loader, 'load_template_source'):
-                    try:
-                        return loader.load_template_source(_template_name, template_dirs)
-                    except TemplateDoesNotExist:
-                        pass
-            tried.append(_template_name)
-            # slice up flavour
-            flavour = self.sliceup_flavour_name(flavour)
-        raise TemplateDoesNotExist("Tried %s" % tried)
+                try:
+                    return loader.load_template_source(_template_name, template_dirs)
+                except TemplateDoesNotExist:
+                    tried.append(_template_name)
+            # slice up flavour (include flavor='')
+            if flavour:
+                flavour = os.path.dirname(flavour)
+            else:
+                break
+        if tried:
+            error_msg = "Tried %s" % tried
+        else:
+            error_msg = "Your TEMPLATE_DIRS settings is empty. Change it to point to at least one template directory."
+        raise TemplateDoesNotExist(error_msg)
+    load_template_source.is_usable = True

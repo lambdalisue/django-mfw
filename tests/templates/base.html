@@ -1,5 +1,6 @@
 {% load url from future %}
 {% load emoji_tags %}
+{% load comments %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,16 +27,62 @@
 
                     {% else %}
                     <li id="login"><a href="{% url 'django.contrib.auth.views.login' %}">Login</a></li>
-                    <li id="register"><a href="{% url 'registration_register' %}">Sign up</a></li>
                     {% endif %}
                 </ul>
             </nav>
         </header>
         <section id="contents">
-            <p style="text-align: center">Your flavour is <code>{{ flavour }}</code></p>
-            <p style="text-align: center">{% emoji '000' %} {% emoji '001' %} {% emoji '002' %}</p>
+            <section id="notification">
+                <p>You are browsing this site with <strong>{{ device.name }}</strong> and
+                    your flavour is <strong><code>{{ flavour }}</code><strong></p>
+                <table>
+                    <tr>
+                        <td>Kind</td>
+                        <td>{{ device.kind }}</td>
+                    </tr>
+                    <tr>
+                        <td>Name</td>
+                        <td>{{ device.name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Model</td>
+                        <td>{{ device.model }}</td>
+                    </tr>
+                    <tr>
+                        <td>Version</td>
+                        <td>{{ device.version }}</td>
+                    </tr>
+                    <tr>
+                        <td>Support cookie</td>
+                        <td>{{ device.support_cookie }}</td>
+                    </tr>
+                    <tr>
+                        <td>UID</td>
+                        <td>{{ device.uid }}</td>
+                    </tr>
+                    <tr>
+                        <td>Is reliable</td>
+                        <td>{{ device.reliable }}</td>
+                    </tr>
+                </table>
+                <p>
+                    {% emoji '000' %}{% emoji '001' %} {% emoji '002' %}
+                    {% emoji '003' %}{% emoji '004' %} {% emoji '005' %}
+                    {% emoji '006' %}{% emoji '007' %} {% emoji '008' %}
+                    {% emoji '009' %}{% emoji '010' %} {% emoji '011' %}
+                </p>
+            </section>
+            <section id="main-contents">
             {% block contents %}
             {% endblock %}
+            </section>
+            <section id="comment-section">
+                <h1>For testing POST</h1>
+                {% with next=request.path %}
+                    {% render_comment_form for contenttypes.contenttype 1 %}
+                {% endwith %}
+                {% render_comment_list for contenttypes.contenttype 1 %}
+            </section>
         </section>
         <footer>
             <p>Copyright &copy; 2011 Alisue, hashnote.net</p>

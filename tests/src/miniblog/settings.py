@@ -102,7 +102,7 @@ TEMPLATE_LOADERS = (
 
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+#    'django.template.loaders.eggs.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -119,26 +119,17 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+
     # This DeviceDetectionMiddleware must come first
     'mfw.middleware.device.DeviceDetectionMiddleware',
 
-    # CacheBasedSessionMiddleware requires the following middlewares to enable
-    # django's cache system.
-    'django.middleware.cache.UpdateCacheMiddleware',            
-    'django.middleware.common.CommonMiddleware',                
-    'django.middleware.cache.FetchFromCacheMiddleware',         
-
-    # This CacheBasedSessionMiddleware is required to enable session with the
-    # device which does not support cookie. Comment out existing
-    # SessionMiddleware
-    'mfw.middleware.session.CacheBasedSessionMiddleware',       
-    #'django.contrib.sessions.middleware.SessionMiddleware',
-
-    # This SessionBasedCsrfViewMiddleware is required to enable csrf with the
-    # device which does not support cookie. Comment out existing
-    # CsrfViewMiddleware
-    'mfw.middleware.csrf.SessionBasedCsrfViewMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # This SessionMiddleware is required to enable session with the
+    # device which does not support cookie. And because of the order
+    # of middleware calling in response phase, custom CsrfViewMiddleware
+    # is also required to use csrf
+    'mfw.middleware.session.SessionMiddleware',       
+    'mfw.middleware.csrf.CsrfViewMiddleware',
 
     # This DeviceFlavourDetectionMiddleware is required to enable flavour
     # template system.
@@ -147,8 +138,7 @@ MIDDLEWARE_CLASSES = (
     # This DeviceEncodingMiddleware is required to convert response encoding
     #'mfw.middleware.encoding.DeviceEncodingMiddleware',
     'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware',
-                                                                                                                            
-    'django.middleware.common.CommonMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -170,14 +160,19 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'miniblog.linecomments',
     'miniblog.autocmds',
     'miniblog.blogs',
     'mfw',
     'mfw.contrib.emoji',
+    'django.contrib.comments',
 )
 
-# Ingoring non relible mobile is not useful for debugging
-MFW_DEVICE_IGNORE_NON_RELIBLE_MOBILE = not DEBUG
+COMMENTS_APP = 'miniblog.linecomments'
+
+# It is just for debugging
+MFW_SESSION_TRUST_NON_RELIABLE_DEVICE = True
+CSRF_FAILURE_VIEW = 'mfw.views.debug_csrf_failure'
 
 FIXTURE_DIRS = (
     os.path.join(ROOT, 'fixtures'),

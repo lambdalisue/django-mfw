@@ -1,45 +1,109 @@
 {% load url from future %}
-<!DOCTYPE html>
-<html>
+{% load emoji_tags %}
+{% load comments %}
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE html PUBLIC "-//i-mode group (ja)//DTD XHTML i-XHTML(Locale/Ver.=ja/2.3) 1.0//EN" "i-xhtml_4ja_10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
 <head>
-    <meta charset="utf-8">
-    <title>{% block title %}Mini blog{% endblock %}</title>
-    <!--[if lt IE 9]>
-    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=Shift_JIS" />
+<title>Miniblog</title>
 </head>
-<body>
-    <div id="container">
-        <header>
-            <figure id="logo">
-                <h1><a href="/">Mini blog</a></h1>
-                <p>Mini blog powered by Django</p>
-            </figure>
-            <nav>
-                <ul>
-                    {% if user.is_authenticated %}
-                    <li id="create-new-entry"><a href="{% url 'blogs-entry-create' %}">Create new entry</a></li>
-                    <li id="logout"><a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a></li>
-                    <li id="admin"><a href="{% url 'admin:index' %}">Admin</a></li>
+<body bgcolor="#FFFFFF" vlink="" link="" alink="" text="">
+<font size="-2">
 
-                    {% else %}
-                    <li id="login"><a href="{% url 'django.contrib.auth.views.login' %}">Login</a></li>
-                    <li id="register"><a href="{% url 'registration_register' %}">Sign up</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </header>
-        <section id="contents">
-            <p style="text-align: center">Your flavour is <code>{{ flavour }}</code></p>
-            <p style="text-align: center">You see thie message because you are using <strong>Mobilephone</strong></p>
-            <p style="text-align: center">{% emoji '000' %} {% emoji '001' %} {% emoji '002' %}</p>
-            {% block contents %}
-            {% endblock %}
-        </section>
-        <footer>
-            <p>Copyright &copy; 2011 Alisue, hashnote.net</p>
-        </footer>
-    </div>
+<marquee bgcolor="#666666">
+<font size="-2" color="#FFFFFF">A framework for developping mobile web site</font> 
+</marquee>
+
+<div align="center">
+    <h1>Mini blog</h1>
+    <p>Mini blog powered by Django</p>
+</div>
+
+<table width="100%">
+    <tr>
+        <td bgcolor="#666666" align="center"><font color="#ffffff" size="-2">Control Panel</font></td>
+    </tr>
+</table>
+<div align="center">
+{% if user.is_authenticated %}
+<a href="{% url 'blogs-entry-create' %}">Create new entry</a><br />
+<a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a><br />
+<a href="{% url 'admin:index' %}">Admin</a>
+{% else %}
+{% emoji 'b86' %} <a href="{% url 'django.contrib.auth.views.login' %}">Login</a><br />
+{% endif %}
+<p>You are browsing this site with <strong>{{ device.name }}</strong> and
+    your flavour is <strong><code>{{ flavour }}</code><strong></p>
+<table>
+    <tr>
+        <td>Kind</td>
+        <td>{{ device.kind }}</td>
+    </tr>
+    <tr>
+        <td>Name</td>
+        <td>{{ device.name }}</td>
+    </tr>
+    <tr>
+        <td>Model</td>
+        <td>{{ device.model }}</td>
+    </tr>
+    <tr>
+        <td>Version</td>
+        <td>{{ device.version }}</td>
+    </tr>
+    <tr>
+        <td>Support cookie</td>
+        <td>{{ device.support_cookie }}</td>
+    </tr>
+    <tr>
+        <td>UID</td>
+        <td>{{ device.uid }}</td>
+    </tr>
+    <tr>
+        <td>Is reliable</td>
+        <td>{{ device.reliable }}</td>
+    </tr>
+</table>
+
+<p>
+    {% emoji '000' %}{% emoji '001' %} {% emoji '002' %}
+    {% emoji '003' %}{% emoji '004' %} {% emoji '005' %}
+    {% emoji '006' %}{% emoji '007' %} {% emoji '008' %}
+    {% emoji '009' %}{% emoji '010' %} {% emoji '011' %}
+</p>
+</div>
+
+
+<table width="100%">
+  <tr>
+    <td bgcolor="#666666" align="center"><font color="#ffffff" size="-2">For testing POST</font></td>
+  </tr>
+</table>
+{% with next=request.path %}
+    {% render_comment_form for contenttypes.contenttype 1 %}
+{% endwith %}
+{% render_comment_list for contenttypes.contenttype 1 %}
+
+<table width="100%">
+  <tr>
+    <td bgcolor="#666666" align="center"><font color="#ffffff" size="-2">Content</font></td>
+  </tr>
+</table>
+
+{% block contents %}
+{% endblock %}
+
+<hr />
+
+<table width="100%">
+  <tr>
+    <td bgcolor="#CCCCCC" align="center"><a href="/" accesskey="0">
+      <font size="-2">(c)2011 - Miniblog</font></a>
+    </td>
+  </tr>
+</table>
+
+</font>
 </body>
 </html>
