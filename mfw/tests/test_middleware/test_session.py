@@ -225,7 +225,7 @@ class MFWSessionMiddlewareTestCase(TestCase):
 
     def test_csrf_protection_pass_with_not_support_cookie(self):
         from django.middleware.csrf import get_token
-        from django.middleware.csrf import CsrfViewMiddleware
+        from mfw.middleware.csrf import CsrfViewMiddleware
 
         # request with GET
         request = self.factory.get('/', **NOT_SUPPORT_COOKIE)
@@ -244,6 +244,7 @@ class MFWSessionMiddlewareTestCase(TestCase):
         self.assertEqual(request.META.get('CSRF_COOKIE', None), csrf_token)
         self.assertEqual(request.META.get('CSRF_COOKIE_USED', False), True)
 
+        # bottom up for response phase
         response = middleware3.process_response(request, response)
         response = middleware2.process_response(request, response)
         
@@ -263,7 +264,7 @@ class MFWSessionMiddlewareTestCase(TestCase):
     def test_csrf_protection_fail_with_not_support_cookie(self):
         from django.http import HttpResponseForbidden
         from django.middleware.csrf import get_token
-        from django.middleware.csrf import CsrfViewMiddleware
+        from mfw.middleware.csrf import CsrfViewMiddleware
 
         # request with GET
         request = self.factory.get('/', **NOT_SUPPORT_COOKIE)
@@ -282,6 +283,7 @@ class MFWSessionMiddlewareTestCase(TestCase):
         self.assertEqual(request.META.get('CSRF_COOKIE', None), csrf_token)
         self.assertEqual(request.META.get('CSRF_COOKIE_USED', False), True)
 
+        # bottom up for response phase
         response = middleware3.process_response(request, response)
         response = middleware2.process_response(request, response)
 

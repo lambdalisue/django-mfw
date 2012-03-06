@@ -90,7 +90,10 @@ class SessionMiddleware(OriginalSessionMiddleware):
             # _get_new_session_key return same value thus simply
             # over write the existing session data.
             self.session_key = self._get_new_session_key()
-            self.save()
+            try:
+                self.save(must_create=True)
+            except CreateError:
+                self.save()
             self.modified = True
             self._session_cache = {}
             return

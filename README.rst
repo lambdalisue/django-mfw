@@ -50,9 +50,8 @@ Quick tutorial
         The following django-mfw middlewares are assumed that this middleware
         has called before they are called.
 
-3.	Add ``mfw.middleware.session.SessionMiddleware``
-	to your ``MIDDLEWARE_CLASSES`` setting and *comment out* 
-	``django.contrib.sessions.middleware.SessionMiddleware``
+3.	Add ``mfw.middleware.session.SessionMiddleware`` and ``mfw.middleware.csrf.CsrfViewMiddleware``
+	to your ``MIDDLEWARE_CLASSES`` setting and *comment out* existing middlewares.
 
 4.	Add ``mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware`` and
 	``mfw.middleware.flavour.DeviceFlavourDetectionMiddleware`` to your ``MIDDLEWARE_CLASSES`` setting.
@@ -77,7 +76,8 @@ The code below describe sample settings. See `settings.py <https://github.com/la
 	    'django.middleware.common.CommonMiddleware',
 	    #'django.contrib.sessions.middleware.SessionMiddleware',
 	    'mfw.middleware.session.SessionMiddleware',
-	    'django.middleware.csrf.CsrfViewMiddleware',
+	    #'django.middleware.csrf.CsrfViewMiddleware',
+	    'mfw.middleware.csrf.CsrfViewMiddleware',
 	    'django.contrib.auth.middleware.AuthenticationMiddleware',
 	    'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware',
 	    'mfw.middleware.flavour.DeviceFlavourDetectionMiddleware',

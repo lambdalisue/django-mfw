@@ -125,11 +125,11 @@ MIDDLEWARE_CLASSES = (
     'mfw.middleware.device.DeviceDetectionMiddleware',
 
     # This SessionMiddleware is required to enable session with the
-    # device which does not support cookie. Comment out existing
-    # SessionMiddleware
-    #'django.contrib.sessions.middleware.SessionMiddleware',
+    # device which does not support cookie. And because of the order
+    # of middleware calling in response phase, custom CsrfViewMiddleware
+    # is also required to use csrf
     'mfw.middleware.session.SessionMiddleware',       
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'mfw.middleware.csrf.CsrfViewMiddleware',
 
     # This DeviceFlavourDetectionMiddleware is required to enable flavour
     # template system.
