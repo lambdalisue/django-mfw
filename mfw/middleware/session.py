@@ -39,6 +39,7 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.utils.importlib import import_module
 from django.contrib.sessions.middleware import SessionMiddleware as OriginalSessionMiddleware
+from django.contrib.sessions.backends.base import CreateError
 
 
 def create_session_key(carrier, uid):
