@@ -135,8 +135,12 @@ MIDDLEWARE_CLASSES = (
     # template system.
     'mfw.middleware.flavour.DeviceFlavourDetectionMiddleware',
                                                                 
-    # This DeviceEncodingMiddleware is required to convert response encoding
-    #'mfw.middleware.encoding.DeviceEncodingMiddleware',
+    # This DeviceEncodingMiddleware is required to encode response encoding
+    # and DeviceEmojiTranslationMiddleware is required to translate carrier
+    # emoji to handle. These middlewares are order sensitive.
+    # DeviceEncodingMiddleware must be called before
+    # DeviceEmojiTranslationMiddleware in request phase.
+    'mfw.middleware.encoding.DeviceEncodingMiddleware',
     'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware',
 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
