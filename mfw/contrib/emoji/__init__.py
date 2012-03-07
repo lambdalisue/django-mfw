@@ -16,5 +16,9 @@ e4u.load(filename=settings.MFW_EMOJI_TRANSLATION_FILENAME)
 
 # Validation
 if 'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware' in settings.MIDDLEWARE_CLASSES:
-    if 'mfw.middleware.encoding.DeviceEncodingMiddleware' in settings.MIDDLEWARE_CLASSES:
-        raise ImproperlyConfigured("``DeviceEmojiTranslationMiddleware`` cannot be used with ``DeviceEncodingMiddleware``")
+    found = False
+    for middleware in settings.MIDDLEWARE_CLASSES:
+        if middleware == 'mfw.middleware.encoding.DeviceEncodingMiddleware':
+            found = True
+        elif middleware == 'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware' and not found:
+            raise ImproperlyConfigured("``mfw.middleware.encoding.DeviceEncodingMiddleware`` must be in ``MIDDLEWARE_CLASSES`` before the ``mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware``")
