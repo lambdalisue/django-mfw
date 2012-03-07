@@ -31,44 +31,52 @@ License:
 
 """
 from django.conf import settings
+from django.utils.encoding import force_unicode
 
 import e4u
+
+def translate(src, carrier, encoding):
+    c = force_unicode(src)
+    # translate all emoji
+    c = e4u.translate(c, reverse=True, **{'carrier': carrier, 'encoding': encoding})
+    return c
+
+def encode(src, encoding):
+    c = force_unicode(src)
+    # insted of raise exception, replace character which cannot encode.
+    dst = c.encode(encoding, 'replace')
+    return dst
+
+def translate_dict(src, carrier):
+    src._mutable = True
+    for key, value in src.iteritems():
+        src[key] = e4u.translate(value, **{'carrier': carrier, 'encoding': settings.DEFAULT_CHARSET})
+    src._mutable = False
+    src._mfw_encoded = True
 
 
 class DeviceEmojiTranslationMiddleware(object):
     """Translate device emoji to unicode emoji. DO NOT USE this with `mfw.middleware.encoding.DeviceEncodingMiddleware`."""
     def process_request(self, request):
-        """Translate emoji encoding in GET and POST"""
-        
+        # tell django to use device encoding
         if not hasattr(request.device, 'carrier'):
             return
-        
-        def _convert_dict(d, profile):
-            for k, v in d.iteritems():
-                d[k] = e4u.translate(v, **profile)
-                
-        profile = {'carrier': request.device.carrier, 'encoding': request.device.encoding}
-        
-        request.GET._mutable = True
-        request.POST._mutable = True
-        _convert_dict(request.GET, profile)
-        _convert_dict(request.POST, profile)
-        request.GET._mutable = False
-        request.POST._mutable = False
+
+        # translate GET/POST
+        if not getattr(request.GET, '_mfw_translated', False):
+            translate_dict(request.GET, request.device.carrier)
+        if not getattr(request.POST, '_mfw_translated', False):
+            translate_dict(request.POST, request.device.carrier)
     
     def process_response(self, request, response):
-        """Translate emoji encoding in response"""
-        
         if response['content-type'].startswith('text/'):
-            c = unicode(response.content, 'utf-8')
-            if not hasattr(request.device, 'carrier'):
-                profile = {
-                    'carrier': settings.MFW_EMOJI_DEFAULT_CARRIER,
-                    'encoding': settings.MFW_EMOJI_DEFAULT_ENCODING,
-                }
-            else:
-                profile = {'carrier': request.device.carrier, 'encoding': request.device.encoding}
-                response['content-type'] = 'application/xhtml+xml; charset=%s' % request.device.encoding
-            c = e4u.translate(c, reverse=True, **profile)
-            response.content = c.encode(profile['encoding'], 'replace')
+            if not getattr(response, '_mfw_translated', False):
+                if not hasattr(request.device, 'carrier'):
+                    carrier = settings.MFW_EMOJI_DEFAULT_CARRIER
+                else:
+                    carrier = request.device.carrier
+                encoding = request.device.encoding
+                response.content = translate(response.content, carrier, encoding)
+                response._mfw_translated = True
+
         return response
