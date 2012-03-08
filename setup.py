@@ -41,5 +41,6 @@ setup(
     test_suite='runtests.runtests',
     tests_require=[
         'PyYAML',
+        'django-jenkins',
     ],
 )

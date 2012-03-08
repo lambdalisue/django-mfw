@@ -170,6 +170,7 @@ INSTALLED_APPS = (
     'mfw',
     'mfw.contrib.emoji',
     'django.contrib.comments',
+    'django_jenkins',
 )
 
 COMMENTS_APP = 'miniblog.linecomments'
@@ -177,6 +178,18 @@ COMMENTS_APP = 'miniblog.linecomments'
 # It is just for debugging
 MFW_SESSION_TRUST_NON_RELIABLE_DEVICE = True
 CSRF_FAILURE_VIEW = 'mfw.views.debug_csrf_failure'
+
+# django-jenkins
+JENKINS_TASKS = (
+    'django_jenkins.tasks.with_coverage',
+    'django_jenkins.tasks.django_tests',
+    'django_jenkins.tasks.run_pep8',
+    'django_jenkins.tasks.run_pyflakes',
+    #'django_jenkins.tasks.run_jslint',
+    #'django_jenkins.tasks.run_csslint',    
+    #'django_jenkins.tasks.run_sloccount',    
+    #'django_jenkins.tasks.lettuce_tests',
+)
 
 FIXTURE_DIRS = (
     os.path.join(ROOT, 'fixtures'),
