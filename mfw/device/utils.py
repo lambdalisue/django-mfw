@@ -73,10 +73,32 @@ class DeviceDetector(object):
         self._device_classes = []
         for device_class in settings.MFW_DEVICE_CLASSES:
             self._device_classes.append(get_device_class(device_class))
+        self._device_cache = {}
 
     def detect(self, meta):
+        device = self._cached_detect(meta)
+        device = self._non_cached_detect(device, meta)
+        return device
+
+    def _cached_detect(self, meta):
+        user_agent = meta.get('HTTP_USER_AGENT', None)
+        # does the request has HTTP_USER_AGENT?
+        if not user_agent:
+            return DummyDevice()
+        # Try to find Device instance from cache
+        if user_agent in self._device_cache:
+            return self._device_cache[user_agent]
+        # Try to detect the Device
         for device_class in self._device_classes:
             device = device_class.detect(meta)
             if device:
+                self._device_cache[user_agent] = device
                 return device
+        # No suite device found
         return DummyDevice()
+
+    def _non_cached_detect(self, device, meta):
+        # Call non cached detect
+        device = device.non_cached_detect(meta)
+        return device
+

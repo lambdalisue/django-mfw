@@ -90,6 +90,9 @@ class Device(object):
     def detect(cls, meta):
         raise NotImplementedError
 
+    def non_cached_detect(self, meta):
+        return self
+
 
 class UserAgentRegexPatternDevice(Device):
     _patterns = None
@@ -100,16 +103,11 @@ class UserAgentRegexPatternDevice(Device):
         if not user_agent:
             return None
 
-        cache_name = "_%s_cache" % user_agent
-        if hasattr(cls, cache_name):
-            return getattr(cls, cache_name)
-
         for pattern in cls._patterns:
             name, pattern = pattern
             m = pattern.match(user_agent)
             if m:
                 device = cls(name=name, **m.groupdict())
-                setattr(cls, cache_name, device)
                 return device
         return None
 
