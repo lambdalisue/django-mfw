@@ -71,6 +71,8 @@ def create_session_key(meta):
 
 class MFWSessionMiddlewareTestCase(TestCase):
 
+    urls = 'mfw.tests.urls'
+
     def setUp(self):
         self.factory = RequestFactory()
 
