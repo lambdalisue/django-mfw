@@ -29,7 +29,7 @@ setup(
     license = 'MIT',
     packages = find_packages(),
     include_package_data = True,
-    zip_safe = True,
+    zip_safe = False,
     install_requires=[
         'django>=1.3',
         'distribute',
