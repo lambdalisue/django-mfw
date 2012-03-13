@@ -59,7 +59,7 @@ class Loader(BaseLoader):
         return os.path.join(flavour, template_name)
 
     def get_flavour(self):
-        return get_flavour()
+        return get_flavour() or ""
 
     def load_template(self, template_name, template_dirs=None):
         tried = []
