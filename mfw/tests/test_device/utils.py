@@ -77,10 +77,16 @@ def test_detect_with_user_agent_mobile(testcase, user_agent):
     else:
         testcase.assertEqual(device.version, version)
     testcase.assertEqual(device.support_cookie, cookie)
-    testcase.assertEqual(device.reliable, not remote_addr == '127.0.0.1',
-                '"%s" is not within %s carrier CIDR' % (
-                    remote_addr, device.carrier,
-            ))
+    if remote_addr == '127.0.0.1':
+        testcase.assertFalse(device.reliable,
+                    '"127.0.0.1" is not reliable'
+                )
+    else:
+        testcase.assertTrue(device.reliable,
+                    '"%s" is not within %s carrier CIDR' % (
+                        remote_addr, device.carrier,
+                ))
+
     testcase.assertEqual(device.uid, 'A12345')
 
 

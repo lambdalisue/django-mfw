@@ -38,6 +38,7 @@ from mfw.device.base import Device
 
 def appraisal(device, meta):
     """check carrier CIDR and add ``reliable`` attribute to device instance"""
+    device._reliable = False
     if settings.MFW_CHECK_DEVICE_RELIABLE:
         from IPy import IP
         from mfw.cidr import get_cidr
@@ -45,12 +46,13 @@ def appraisal(device, meta):
         remote_addr = meta.get('REMOTE_ADDR', None)
         if cidr and remote_addr and IP(remote_addr) in cidr:
             device._reliable = True
-    device.__class__.reliable = property(lambda self: getattr(self, '_reliable', False))
+    device.__class__.reliable = property(lambda self: self._reliable)
     return device
 
 
 class Mobilephone(Device):
     _kind = 'mobilephone'
+    _uid = None
 
     @property
     def carrier(self):
@@ -60,16 +62,21 @@ class Mobilephone(Device):
     def uid(self):
         return self._uid
 
+    def non_cached_detect(self, meta):
+        self._uid = meta.get(self._uid_meta_name, None)
+        return appraisal(self, meta)
+
 
 class DoCoMo(Mobilephone):
     _name = 'DoCoMo'
+    _encoding = 'cp932'
+    _uid_meta_name = 'HTTP_X_DCMGUID'
 
     @classmethod
     def detect(cls, meta):
         pattern_mova = re.compile(r"DoCoMo/1.0/(?P<model>[^/]*)(?:/c(?P<cache>\d*)|)")
         pattern_foma = re.compile(r"DoCoMo/2.0 (?P<model>[^\(]*)\(c(?P<cache>\d*)")
 
-        uid = meta.get('HTTP_X_DCMGUID', None)
         user_agent = meta.get('HTTP_USER_AGENT', None)
         if not user_agent:
             return None
@@ -86,20 +93,18 @@ class DoCoMo(Mobilephone):
         cache = kwargs.pop('cache')
         kwargs['support_cookie'] = cache >= 500
 
-        instance = cls(**kwargs)
-        instance._encoding = 'cp932'
-        instance._uid = uid
-        return appraisal(instance, meta)
+        return cls(**kwargs)
 
 
 class KDDI(Mobilephone):
     _name = 'KDDI'
+    _encoding = 'cp932'
+    _uid_meta_name = 'HTTP_X_UP_SUBNO'
 
     @classmethod
     def detect(cls, meta):
         pattern = re.compile(r"(?:(?:KDDI-)|(?:SIE-))(?P<model>[^\s/]*)")
 
-        uid = meta.get('HTTP_X_UP_SUBNO', None)
         user_agent = meta.get('HTTP_USER_AGENT', None)
         if not user_agent:
             return None
@@ -111,20 +116,18 @@ class KDDI(Mobilephone):
 
         kwargs['support_cookie'] = True
 
-        instance = cls(**kwargs)
-        instance._encoding = 'cp932'
-        instance._uid = uid
-        return appraisal(instance, meta)
+        return cls(**kwargs)
 
 
 class Softbank(Mobilephone):
     _name = 'Softbank'
+    _encoding = 'utf-8'
+    _uid_meta_name = 'HTTP_X_JPHONE_UID'
 
     @classmethod
     def detect(cls, meta):
         pattern = re.compile(r"(?P<generation>J-PHONE|Vodafone|SoftBank)/(?P<version>[\d\.]*)/(?P<model>[^/\[]*)")
 
-        uid = meta.get('HTTP_X_JPHONE_UID', None)
         user_agent = meta.get('HTTP_USER_AGENT', None)
         if not user_agent:
             return None
@@ -142,7 +145,4 @@ class Softbank(Mobilephone):
         else:
             kwargs['support_cookie'] = True
 
-        instance = cls(**kwargs)
-        instance._encoding = 'utf-8'
-        instance._uid = uid
-        return appraisal(instance, meta)
+        return cls(**kwargs)

@@ -121,8 +121,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
 
-    # This DeviceDetectionMiddleware must come first
-    'mfw.middleware.device.DeviceDetectionMiddleware',
+    # This RequestDeviceDetectionMiddleware must come first
+    'mfw.middleware.device.RequestDeviceDetectionMiddleware',
 
     # This SessionMiddleware is required to enable session with the
     # device which does not support cookie. And because of the order
@@ -142,6 +142,9 @@ MIDDLEWARE_CLASSES = (
     # DeviceEmojiTranslationMiddleware in request phase.
     'mfw.middleware.encoding.DeviceEncodingMiddleware',
     'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware',
+
+    # This ResponseDeviceDetectionMiddleware must come last
+    'mfw.middleware.device.ResponseDeviceDetectionMiddleware',
 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -170,6 +173,7 @@ INSTALLED_APPS = (
     'mfw',
     'mfw.contrib.emoji',
     'django.contrib.comments',
+    'django_jenkins',
 )
 
 COMMENTS_APP = 'miniblog.linecomments'
@@ -177,6 +181,22 @@ COMMENTS_APP = 'miniblog.linecomments'
 # It is just for debugging
 MFW_SESSION_TRUST_NON_RELIABLE_DEVICE = True
 CSRF_FAILURE_VIEW = 'mfw.views.debug_csrf_failure'
+
+# django-jenkins
+PROJECT_APPS = (
+        'mfw',
+        'miniblog.blogs',
+    )
+JENKINS_TASKS = (
+    'django_jenkins.tasks.with_coverage',
+    'django_jenkins.tasks.django_tests',
+    'django_jenkins.tasks.run_pep8',
+    'django_jenkins.tasks.run_pyflakes',
+    'django_jenkins.tasks.run_jslint',
+    'django_jenkins.tasks.run_csslint',    
+    #'django_jenkins.tasks.run_sloccount',    
+    #'django_jenkins.tasks.lettuce_tests',
+)
 
 FIXTURE_DIRS = (
     os.path.join(ROOT, 'fixtures'),

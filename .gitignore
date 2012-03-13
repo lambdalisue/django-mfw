@@ -1,4 +1,11 @@
+# python eggs
 /build
 /dist
 /*.egg-info
+# django
 *.db
+local_settings.py
+local_sites.py
+# virtualenv/jenkins
+/env
+/reports

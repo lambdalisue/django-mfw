@@ -38,9 +38,26 @@ from __future__ import with_statement
 from mfw.device import detect
 
 
-class DeviceDetectionMiddleware(object):
+class RequestDeviceDetectionMiddleware(object):
     """detect device and add ``device`` argument to ``request`` instance"""
     def process_request(self, request):
         device = detect(request.META)
         request.device = device
         return None
+
+class ResponseDeviceDetectionMiddleware(object):
+    """detect device and add ``device`` argument to ``request`` instance"""
+    def process_response(self, request, response):
+        device = detect(request.META)
+        request.device = device
+        return response
+
+class DeviceDetectionMiddleware(RequestDeviceDetectionMiddleware):
+    """detect device and add ``device`` argument to ``request`` instance"""
+    def __init__(self):
+        import warnings
+        warnings.warn(
+                "This middleware has deprecated. Use ``RequestDeviceDetectionMiddleware`` "
+                "and ``ResponseDeviceDetectionMiddleware`` insted.", DeprecationWarning
+            )
+        super(DeviceDetectionMiddleware, self).__init__()

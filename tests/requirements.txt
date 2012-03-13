@@ -1,5 +1,8 @@
-PyYAML
-django>=1.3
 IPy
 BeautifulSoup
 e4u
+PyYAML
+django>=1.3
+django-jenkins
+pep8
+pyflakes
