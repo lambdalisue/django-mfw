@@ -121,8 +121,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
 
-    # This DeviceDetectionMiddleware must come first
-    'mfw.middleware.device.DeviceDetectionMiddleware',
+    # This RequestDeviceDetectionMiddleware must come first
+    'mfw.middleware.device.RequestDeviceDetectionMiddleware',
 
     # This SessionMiddleware is required to enable session with the
     # device which does not support cookie. And because of the order
@@ -142,6 +142,9 @@ MIDDLEWARE_CLASSES = (
     # DeviceEmojiTranslationMiddleware in request phase.
     'mfw.middleware.encoding.DeviceEncodingMiddleware',
     'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware',
+
+    # This ResponseDeviceDetectionMiddleware must come last
+    'mfw.middleware.device.ResponseDeviceDetectionMiddleware',
 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

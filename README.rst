@@ -43,8 +43,10 @@ Quick tutorial
 
 1.	Add ``mfw`` and ``mfw.contrib.emoji`` to your ``INSTALL_APPS`` settings in ``settings.py``
 
-2.  Add ``mfw.middleware.device.DeviceDetectionMiddleware`` to **the first
-    item** of ``MIDDLEWARE_CLASSES`` in ``settings.py``
+2.  Add ``mfw.middleware.device.RequestDeviceDetectionMiddleware`` to **the first
+    item** of ``MIDDLEWARE_CLASSES`` in ``settings.py`` and
+    ``mfw.middleware.device.ResponseDeviceDetectionMiddleware`` to **the last
+    item** of
 
     .. Note::
         The following django-mfw middlewares are assumed that this middleware
@@ -71,7 +73,7 @@ The code below describe sample settings. See `settings.py <https://github.com/la
 	)
 	
 	MIDDLEWARE_CLASSES = (
-	    'mfw.middleware.device.DeviceDetectionMiddleware',
+	    'mfw.middleware.device.RequestDeviceDetectionMiddleware',
 
 	    'django.middleware.common.CommonMiddleware',
 	    #'django.contrib.sessions.middleware.SessionMiddleware',
@@ -81,6 +83,8 @@ The code below describe sample settings. See `settings.py <https://github.com/la
 	    'django.contrib.auth.middleware.AuthenticationMiddleware',
 	    'mfw.contrib.emoji.middleware.DeviceEmojiTranslationMiddleware',
 	    'mfw.middleware.flavour.DeviceFlavourDetectionMiddleware',
+
+	    'mfw.middleware.device.ResponseDeviceDetectionMiddleware',
 	)
 	
 	TEMPLATE_CONTEXT_PROCESSORS = (
