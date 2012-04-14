@@ -90,7 +90,12 @@ class SessionMiddleware(OriginalSessionMiddleware):
         def create(self):
             # _get_new_session_key return same value thus simply
             # over write the existing session data.
-            self.session_key = self._get_new_session_key()
+            session_key = self._get_new_session_key()
+            try:
+                self.session_key = session_key
+            except AttributeError:
+                # Django 1.4
+                self._session_key = session_key
             try:
                 self.save(must_create=True)
             except CreateError:
